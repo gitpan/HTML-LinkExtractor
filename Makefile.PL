@@ -14,5 +14,8 @@ WriteMakefile(
        AUTHOR     => 'PodMaster') : ()),
 );
 
-# perl Makefile.PL && nmake realclean && cls && perl Makefile.PL && nmake test
-# cpan-upload -mailto o@o.o -verbose -user podmaster HTML-LinkExtractor-0.09.tar.gz
+__END__
+perl Makefile.PL && nmake realclean && cls && perl Makefile.PL && nmake disttest
+nmake dist TAR=ptar
+chmod 7777 *.gz
+perl -le" `cpan-upload $_` for( (sort glob q,*.gz,)[-1]) "

@@ -6,7 +6,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test;
-BEGIN { plan tests => 10 };
+BEGIN { plan tests => 12 };
 use HTML::LinkExtractor;
 ok(1); # If we made it this far, we're ok.
 
@@ -18,7 +18,7 @@ ok( $output =~ m{9 we GOT}  or 0 );
 ok( $output =~ m{\Q'cite' => 'http://www.stonehenge.com/merlyn/'} or 0 );
 ok( $output =~ m{\Q'url' => 'http://www.foo.com/foo.html'} or 0 );
 
-my $LX = new HTML::LinkExtractor(undef,undef,1);
+my $LX = HTML::LinkExtractor::->new(undef,undef,1);
 
 ok( $LX->strip or 0 );
 ok( $LX->strip(1) && $LX->strip or 0 );
@@ -27,7 +27,7 @@ $LX->parse(\ q{ <a href="http://slashdot.org">stuff that matters</a> } );
 
 ok( $LX->links->[0]->{_TEXT} eq "stuff that matters" or 0);
 
-$LX = new HTML::LinkExtractor(
+$LX = HTML::LinkExtractor::->new(
     sub {
         my( $lx, $link ) = @_;
         $output = $link->{_TEXT};
@@ -43,6 +43,33 @@ $LX->parse(\ q{
 
 ok( $output eq 'perl guy' or 0 );
 ok( @{ $LX->links } == 0 ? 1 : 0 );
+
+# bug#5470
+
+$output = [];
+$LX = HTML::LinkExtractor::->new(
+    sub {
+        my( $lx, $link ) = @_;
+        push @$output,$link;
+    },
+    'http://use.perl.org', 1
+);
+
+
+$LX->parse(\ q{
+<a href="http://www.foo.com"><img src="http://www.bar.com/img.gif"></a>
+} );
+
+ok( @$output == 2  );
+
+
+$LX = HTML::LinkExtractor::->new(undef, 'http://use.perl.org', 1 );
+
+$LX->parse(\ q{
+<a href="http://www.foo.com"><img src="http://www.bar.com/img.gif" alt="fooger"></a>
+} );
+
+ok( @{ $LX->links } == 2 );
 
 #########################
 

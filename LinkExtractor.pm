@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -113,7 +113,6 @@ sub parse {
 
 sub _parsola {
     my $self = shift;
-    my $IS_WE_OPEN = 0;
 
 ## a stack of links for keeping track of TEXT
 ## which is all of "<a href>text</a>"
@@ -131,22 +130,25 @@ sub _parsola {
     while (my $T = $self->{_tp}->get_token() ) {
         my $NL; #NewLink
         my $Tag = $T->return_tag;
+        my $got_TAGS_IN_NEED;
 ## Start tag?
         if($T->is_start_tag) {
             next unless exists $TAGS{$Tag};
 
 ## Do we have a tag for which we want to capture text?
-            my $UNIQUE = 0;
-            $UNIQUE = grep { /^\Q$Tag\E$/i } @TAGS_IN_NEED;
+            $got_TAGS_IN_NEED = 0;
+            $got_TAGS_IN_NEED = grep { /^\Q$Tag\E$/i } @TAGS_IN_NEED;
 
 ## then check to see if we got things besides META :)
             if(defined $TAGS{ $Tag }) {
+
                 for my $Btag(@{$TAGS{$Tag}}) {
 ## and we check if they do have one with a value
                     if(exists $T->return_attr()->{ $Btag }) {
+
                         $NL = $T->return_attr();
 ## TAGS_IN_NEED are tags in deed (start capturing the <a>STUFF</a>)
-                        if($UNIQUE) {
+                        if($got_TAGS_IN_NEED) {
                             push @TEXT, $NL;
                             $NL->{_TEXT} = "";
                         }
@@ -208,7 +210,7 @@ sub _parsola {
             }
 
             if(exists $self->{_cb}) {
-                $self->{_cb}->($self, $NL ) unless @TEXT;
+                $self->{_cb}->($self, $NL ) if not $got_TAGS_IN_NEED or not @TEXT; #bug#5470
             } else {
                 push @{$self->{_LINKS}}, $NL;
             }
