@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.121';
+$VERSION = '0.13';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -163,7 +163,7 @@ sub _parsola {
                     defined $$NL{'name'} &&  $$NL{'name'} =~ /refresh/i
                     ) ) {
 
-                    my( $timeout, $url ) = split m{;\s*?URL=}, $$NL{content},2;
+                    my( $timeout, $url ) = split m{;\s*?URL=}i, $$NL{content},2;
                     my $base = $self->{_base};
                     $$NL{url} = URI->new_abs( $url, $base ) if $base;
                     $$NL{url} = $url unless exists $$NL{url};
@@ -492,7 +492,7 @@ Only after you call C<parse> will this method return anything.
 This method returns a reference to an ArrayOfHashes,
 which basically looks like (Data::Dumper output)
 
-    $VAR1 = [ { type => 'img', src => 'image.png' }, ];
+    $VAR1 = [ { tag => 'img', src => 'image.png' }, ];
 
 Please note that if yo provide a callback this array will be empty.
 
@@ -586,7 +586,7 @@ to see a bug list and/or repot new ones.
 
 =head1 LICENSE
 
-Copyright (c) 2003 by D.H. (PodMaster).
+Copyright (c) 2003, 2004 by D.H. (PodMaster).
 All rights reserved.
 
 This module is free software;

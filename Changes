@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::LinkExtractor.
 
+0.13  Fri Jan  7 00:47:13 2005
+    - bugs 9468, 7828
+
 0.121 Thu Sep 30 05:34:26 2004
     - forgot to update changes file
 
