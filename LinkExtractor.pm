@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -155,7 +155,12 @@ sub _parsola {
             }elsif($Tag eq 'meta') {
                 $NL = $T->return_attr();
 
-                if($$NL{content} and $$NL{'http-equiv'} =~ /refresh/i ) {
+                if(defined $$NL{content} and length $$NL{content} and (
+                    defined $$NL{'http-equiv'} &&  $$NL{'http-equiv'} =~ /refresh/i
+                    or
+                    defined $$NL{'name'} &&  $$NL{'name'} =~ /refresh/i
+                    ) ) {
+
                     my( $timeout, $url ) = split m{;\s*?URL=}, $$NL{content},2;
                     my $base = $self->{_base};
                     $$NL{url} = URI->new_abs( $url, $base ) if $base;
@@ -554,14 +559,31 @@ and the following URL's
     If there is a valid url, 'url' is set as the attribute.
     The meta tag has no 'attributes' listed in %TAGS.
 
-=head1 AUTHOR
-
-podmaster (see CPAN)
 
 =head1 SEE ALSO
 
 L<HTML::LinkExtor>, L<HTML::TokeParser::Simple>, L<HTML::Tagset>.
 
-=cut
+=head1 AUTHOR
 
+D.H (PodMaster)
+
+
+Please use http://rt.cpan.org/ to report bugs.
+
+Just go to
+http://rt.cpan.org/NoAuth/Bugs.html?Dist=HTML-Scrubber
+to see a bug list and/or repot new ones.
+
+=head1 LICENSE
+
+Copyright (c) 2003 by D.H. (PodMaster).
+All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
 

@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::LinkExtractor.
 
+0.09  Sun Nov 30 06:33:41 2003
+    - took in a patch from Frederic Krueger
+    - changed pod a tad, added license
+
 0.08  Wed Sep  3 19:12:51 2003
     - bumped required HTML::TokeParser version and changed 
       deprecated $T->return_text calls to $T->as_is after
@@ -12,6 +16,7 @@ Revision history for Perl extension HTML::LinkExtractor.
     - fixed a stupid typo, added '!doctype' (a process instruction) to the tags
       list
     - added one more cool example (calculate download size of a page)
+
 0.05  Wed Aug 28 07:57:12 2002
     - *sigh* added prerequisites to Makefile.PL, edited Changes/Readme
     - No new features or nothing
@@ -20,10 +25,13 @@ Revision history for Perl extension HTML::LinkExtractor.
     - Converted to use HTML::TokeParser::Simple
     - Added a strip and appropriate pod
     - Release on CPAN (don't expect to ever need to upload a new version)
+
 0.03  Mon Aug 19 03:30:55 2002
     - And then polished up ( and added pod )
+
 0.02  Mon Aug 19 01:27:55 2002
     - The first incarnation is written (ugly)
+
 0.01  Mon Aug 19 00:47:55 2002
 	- original version; created by h2xs 1.21 with options
 		-AX -p 5.000 -n HTML::LinkExtractor

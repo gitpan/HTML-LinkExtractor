@@ -11,5 +11,8 @@ WriteMakefile(
 
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM => 'LinkExtractor.pm', # retrieve abstract from module
-       AUTHOR     => 'A. U. Thor <a.u.thor@a.galaxy.far.far.away>') : ()),
+       AUTHOR     => 'PodMaster') : ()),
 );
+
+# perl Makefile.PL && nmake realclean && cls && perl Makefile.PL && nmake test
+# cpan-upload -mailto o@o.o -verbose -user podmaster HTML-LinkExtractor-0.09.tar.gz
