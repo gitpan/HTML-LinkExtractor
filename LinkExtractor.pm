@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -156,7 +156,7 @@ sub _parsola {
                 $NL = $T->return_attr();
 
                 if($$NL{content} and $$NL{'http-equiv'} =~ /refresh/i ) {
-                    my( $timeout, $url ) = split m{;\s+URL=}, $$NL{content};
+                    my( $timeout, $url ) = split m{;\s*?URL=}, $$NL{content},2;
                     my $base = $self->{_base};
                     $$NL{url} = URI->new_abs( $url, $base ) if $base;
                     $$NL{url} = $url unless exists $$NL{url};
@@ -378,21 +378,21 @@ I<L<link-type|/"WHAT'S A LINK-type tag">> tags.
     use strict;
     use LWP::Simple;
     use HTML::LinkExtractor;
-    
+                                                        #
     my $url  = shift || 'http://www.google.com';
     my $html = get($url);
     my $Total = length $html;
-    
+                                                        #
     print "initial size $Total\n";
-    
+                                                        #
     my $LX = new HTML::LinkExtractor(
         sub {
             my( $X, $tag ) = @_;
-    
+                                                        #
             unless( grep {$_ eq $tag->{tag} } @HTML::LinkExtractor::TAGS_IN_NEED ) {
-    
+                                                        #
     print "$$tag{tag}\n";
-    
+                                                        #
                 for my $urlAttr ( @{$HTML::LinkExtractor::TAGS{$$tag{tag}}} ) {
                     if( exists $$tag{$urlAttr} ) {
                         my $size = (head( $$tag{$urlAttr} ))[1];
@@ -405,9 +405,9 @@ I<L<link-type|/"WHAT'S A LINK-type tag">> tags.
         $url,
         0
     );
-    
+                                                        #
     $LX->parse(\$html);
-    
+                                                        #
     print "The total size of \n$url\n is $Total bytes\n";
     __END__
 
