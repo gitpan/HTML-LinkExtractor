@@ -1,4 +1,7 @@
 Revision history for Perl extension HTML::LinkExtractor.
+0.05  Wed Aug 28 07:57:12 2002
+    - *sigh* added prerequisites to Makefile.PL, edited Changes/Readme
+    - No new features or nothing
 
 0.04  Mon Aug 26 04:00:55 2002
     - Converted to use HTML::TokeParser::Simple

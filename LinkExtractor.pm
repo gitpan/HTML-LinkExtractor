@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)

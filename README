@@ -1,4 +1,4 @@
-HTML/LinkExtractor version 0.01
+HTML/LinkExtractor version 0.05
 ===============================
 
 The README is used to introduce the module and provide instructions on
@@ -25,13 +25,15 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-  blah blah blah
+  HTML::TokeParser::Simple
+  which requires HTML::TokeParser
+  which requires HTML::Parser ...
 
 COPYRIGHT AND LICENCE
 
 Put the correct copyright and licence information here.
 
-Copyright (C) 2002 A. U. Thor
+Copyright (C) 2002 D. H. aka podmaster
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
