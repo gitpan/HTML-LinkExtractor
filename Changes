@@ -1,4 +1,8 @@
 Revision history for Perl extension HTML::LinkExtractor.
+0.06  Fri Oct 11 10:12:41 2002
+    - fixed a stupid typo, added '!doctype' (a process instruction) to the tags
+      list
+    - added one more cool example (calculate download size of a page)
 0.05  Wed Aug 28 07:57:12 2002
     - *sigh* added prerequisites to Makefile.PL, edited Changes/Readme
     - No new features or nothing

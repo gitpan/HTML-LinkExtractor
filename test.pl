@@ -14,7 +14,7 @@ my $output = `$^X $INC{'HTML/LinkExtractor.pm'}`;
 
 #use Data::Dumper;die Dumper $output;
 
-ok( $output =~ m{8 we GOT}  or 0 );
+ok( $output =~ m{9 we GOT}  or 0 );
 ok( $output =~ m{\Q'cite' => 'http://www.stonehenge.com/merlyn/'} or 0 );
 ok( $output =~ m{\Q'url' => 'http://www.foo.com/foo.html'} or 0 );
 

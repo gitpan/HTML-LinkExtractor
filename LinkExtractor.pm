@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -41,8 +41,9 @@ use vars qw( %TAGS );
              td => [qw( background )],
              th => [qw( background )],
              tr => [qw( background )],
-  ## the exotic case
+  ## the exotic cases
            meta => undef,
+     '!doctype' => [qw( url )], # is really a process instruction
 );
 
 ## tags which contain <.*?> STUFF TO GET </\w+>
@@ -174,9 +175,9 @@ sub _parsola {
 ## Declaration?
         }elsif($T->is_declaration) {
 ## We look at declarations, to get anly custom .dtd's (tis linky)
-            my $text - $T->return_text;
+            my $text = $T->return_text;
             if( $text =~ m{ SYSTEM \s \" ( [^\"]* ) \" > $ }ix ) {
-                $NL = { raw => $text, url => $1};
+                $NL = { raw => $text, url => $1, tag => '!doctype' };
             }
 ## End tag?
         }elsif($T->is_end_tag){
@@ -371,6 +372,46 @@ I<L<link-type|/"WHAT'S A LINK-type tag">> tags.
     $LX->parse(\$input);
     __END__
 
+    #### Calculate to total size of a web-page
+    #### adds up the sizes of all the images and stylesheets and stuff
+
+    use strict;
+    use LWP::Simple;
+    use HTML::LinkExtractor;
+    
+    my $url  = shift || 'http://www.google.com';
+    my $html = get($url);
+    my $Total = length $html;
+    
+    print "initial size $Total\n";
+    
+    my $LX = new HTML::LinkExtractor(
+        sub {
+            my( $X, $tag ) = @_;
+    
+            unless( grep {$_ eq $tag->{tag} } @HTML::LinkExtractor::TAGS_IN_NEED ) {
+    
+    print "$$tag{tag}\n";
+    
+                for my $urlAttr ( @{$HTML::LinkExtractor::TAGS{$$tag{tag}}} ) {
+                    if( exists $$tag{$urlAttr} ) {
+                        my $size = (head( $$tag{$urlAttr} ))[1];
+                        $Total += $size if $size;
+    print "adding $size\n" if $size;
+                    }
+                }
+            }
+        },
+        $url,
+        0
+    );
+    
+    $LX->parse(\$html);
+    
+    print "The total size of \n$url\n is $Total bytes\n";
+    __END__
+
+
 =head1 METHODS
 
 =head2 C<$LX-E<gt>new([\&callback, [$baseUrl, [1]]])>
@@ -503,15 +544,19 @@ and the following URL's
 
     <!DOCTYPE HTML SYSTEM "http://www.w3.org/DTD/HTML4-strict.dtd">
     http://www.blooberry.com/indexdot/html/tagpages/d/doctype.htm
+    '!doctype'  is really a process instruction, but is still listed
+    in %TAGS with 'url' as the attribute
 
     and
 
     <meta HTTP-EQUIV="Refresh" CONTENT="5; URL=http://www.foo.com/foo.html">
     http://www.blooberry.com/indexdot/html/tagpages/m/meta.htm
+    If there is a valid url, 'url' is set as the attribute.
+    The meta tag has no 'attributes' listed in %TAGS.
 
 =head1 AUTHOR
 
-podmaster (see CPAN) aka crazyinsomniac@yahoo.com
+podmaster (see CPAN)
 
 =head1 SEE ALSO
 
