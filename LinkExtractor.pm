@@ -2,12 +2,12 @@ package HTML::LinkExtractor;
 
 use strict;
 
-use HTML::TokeParser::Simple 2;
+use HTML::TokeParser 2; # use HTML::TokeParser::Simple 2;
 use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -95,14 +95,14 @@ sub strip {
     return $self->{_strip} = $on ? 1 : 0;
 }
 
-## $p= HTML::TokeParser::Simple->new($filename || FILEHANDLE ||\$filecontents);
+## $p= HTML::TokeParser->new($filename || FILEHANDLE ||\$filecontents); # ## $p= HTML::TokeParser::Simple->new($filename || FILEHANDLE ||\$filecontents);
 
 sub parse {
     my( $this, $hmmm ) = @_;
-    my $tp = new HTML::TokeParser::Simple( $hmmm );
+    my $tp = new HTML::TokeParser( $hmmm ); #     my $tp = new HTML::TokeParser::Simple( $hmmm );
 
     unless($tp) {
-        croak qq[ Couldn't create a HTML::TokeParser::Simple object: $!];
+        croak qq[ Couldn't create a HTML::TokeParser object: $!]; #         croak qq[ Couldn't create a HTML::TokeParser::Simple object: $!];
     }
 
     $this->{_tp} = $tp;
@@ -129,10 +129,10 @@ sub _parsola {
 
     while (my $T = $self->{_tp}->get_token() ) {
         my $NL; #NewLink
-        my $Tag = $T->return_tag;
+        my $Tag = $T->[1]; #         my $Tag = $T->return_tag;
         my $got_TAGS_IN_NEED=0;
 ## Start tag?
-        if($T->is_start_tag) {
+        if($T->[0] eq 'S' ) { #         if($T->is_start_tag) {
             next unless exists $TAGS{$Tag};
 
 ## Do we have a tag for which we want to capture text?
@@ -144,9 +144,9 @@ sub _parsola {
 
                 for my $Btag(@{$TAGS{$Tag}}) {
 ## and we check if they do have one with a value
-                    if(exists $T->return_attr()->{ $Btag }) {
+                    if(exists $T->[2]->{ $Btag }) { #                     if(exists $T->return_attr()->{ $Btag }) {
 
-                        $NL = $T->return_attr();
+                        $NL = $T->[2]; #                         $NL = $T->return_attr();
 ## TAGS_IN_NEED are tags in deed (start capturing the <a>STUFF</a>)
                         if($got_TAGS_IN_NEED) {
                             push @TEXT, $NL;
@@ -155,7 +155,7 @@ sub _parsola {
                     }
                 }
             }elsif($Tag eq 'meta') {
-                $NL = $T->return_attr();
+                $NL = $T->[2]; #                 $NL = $T->return_attr();
 
                 if(defined $$NL{content} and length $$NL{content} and (
                     defined $$NL{'http-equiv'} &&  $$NL{'http-equiv'} =~ /refresh/i
@@ -173,25 +173,25 @@ sub _parsola {
 
             ## In case we got nested tags
             if(@TEXT) {
-                $TEXT[-1]->{_TEXT} .= $T->as_is;
+                $TEXT[-1]->{_TEXT} .= $T->[-1] ; #                 $TEXT[-1]->{_TEXT} .= $T->as_is;
             }
 
 ## Text?
-        }elsif($T->is_text) {
-            $TEXT[-1]->{_TEXT} .= $T->as_is if @TEXT;
+        }elsif($T->[0] eq 'T' ) { #         }elsif($T->is_text) {
+            $TEXT[-1]->{_TEXT} .= $T->[-2]  if @TEXT; #             $TEXT[-1]->{_TEXT} .= $T->as_is if @TEXT;
 ## Declaration?
-        }elsif($T->is_declaration) {
+        }elsif($T->[0] eq 'D' ) { #         }elsif($T->is_declaration) {
 ## We look at declarations, to get anly custom .dtd's (tis linky)
-            my $text = $T->as_is;
+            my $text = $T->[-1] ; #             my $text = $T->as_is;
             if( $text =~ m{ SYSTEM \s \" ( [^\"]* ) \" > $ }ix ) {
                 $NL = { raw => $text, url => $1, tag => '!doctype' };
             }
 ## End tag?
-        }elsif($T->is_end_tag){
+        }elsif($T->[0] eq 'E' ){ #         }elsif($T->is_end_tag){
 ## these be ignored (maybe not in between <a...></a> tags
 ## unless we're stacking (bug #5723)
             if(@TEXT and exists $TAGS{$Tag}) {
-                $TEXT[-1]->{_TEXT} .= $T->as_is;
+                $TEXT[-1]->{_TEXT} .= $T->[-1] ; #                 $TEXT[-1]->{_TEXT} .= $T->as_is;
                 my $pop = pop @TEXT;
                 $TEXT[-1]->{_TEXT} .= $pop->{_TEXT} if @TEXT;
                 $pop->{_TEXT} = _stripHTML( \$pop->{_TEXT} ) if $self->strip;
@@ -231,11 +231,11 @@ sub links {
 
 sub _stripHTML {
     my $HtmlRef = shift;
-    my $tp = new HTML::TokeParser::Simple( $HtmlRef );
+    my $tp = new HTML::TokeParser( $HtmlRef ); #     my $tp = new HTML::TokeParser::Simple( $HtmlRef );
     my $t = $tp->get_token(); # MUST BE A START TAG (@TAGS_IN_NEED)
                               # otherwise it ain't come from LinkExtractor
-    if($t->is_start_tag) {
-        return $tp->get_trimmed_text( '/'.$t->return_tag );
+    if($t->[0] eq 'S' ) { #     if($t->is_start_tag) {
+        return $tp->get_trimmed_text( '/'.$t->[1] ); #         return $tp->get_trimmed_text( '/'.$t->return_tag );
     } else {
         require Data::Dumper;
         local $Data::Dumper::Indent=1;
@@ -348,7 +348,7 @@ I<L<link-type|/"WHAT'S A LINK-type tag">> tags.
     ## or
 
     use HTML::LinkExtractor;
-    use LWP::Simple qw( get );
+    use LWP qw( get ); #     use LWP::Simple qw( get );
 
     my $base = 'http://search.cpan.org';
     my $html = get($base.'/recent');
@@ -390,7 +390,7 @@ I<L<link-type|/"WHAT'S A LINK-type tag">> tags.
     #### adds up the sizes of all the images and stylesheets and stuff
 
     use strict;
-    use LWP::Simple;
+    use LWP; #     use LWP::Simple;
     use HTML::LinkExtractor;
                                                         #
     my $url  = shift || 'http://www.google.com';
@@ -481,7 +481,7 @@ C<$LX-E<gt>strip(undef E<verbar>E<verbar> 0 E<verbar>E<verbar> 1)>
 Each time you call C<parse>, you should pass it a
 C<$filename> a C<*FILEHANDLE> or a C<\$FileContent>
 
-Each time you call C<parse> a new C<HTML::TokeParser::Simple> object
+Each time you call C<parse> a new C<HTML::TokeParser> object 
 is created and stored in C<$this-E<gt>{_tp}>.
 
 You shouldn't need to mess with the TokeParser object.
@@ -571,7 +571,7 @@ and the following URL's
 
 =head1 SEE ALSO
 
-L<HTML::LinkExtor>, L<HTML::TokeParser::Simple>, L<HTML::Tagset>.
+L<HTML::LinkExtor>, L<HTML::TokeParser>, L<HTML::Tagset>.
 
 =head1 AUTHOR
 

@@ -6,7 +6,12 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test;
-BEGIN { plan tests => 13 };
+BEGIN {
+    plan(
+        tests => 12,
+        onfail => sub { exit @_ },
+    );
+}
 use HTML::LinkExtractor;
 ok(1); # If we made it this far, we're ok.
 
@@ -25,6 +30,7 @@ ok( $LX->strip(1) && $LX->strip or 0 );
 
 $LX->parse(\ q{ <a href="http://slashdot.org">stuff that matters</a> } );
 
+#use Data::Dumper;warn Dumper( scalar $LX->links );
 ok( $LX->links->[0]->{_TEXT} eq "stuff that matters" or 0);
 
 $LX = HTML::LinkExtractor::->new(
@@ -60,6 +66,7 @@ $LX->parse(\ q{
 <a href="http://www.foo.com"><img src="http://www.bar.com/img.gif"></a>
 } );
 
+
 ok( @$output == 2  );
 
 
@@ -70,9 +77,3 @@ $LX->parse(\ q{
 } );
 
 ok( @{ $LX->links } == 2 );
-
-#########################
-
-# Insert your test code below, the Test module is use()ed here so read
-# its man page ( perldoc Test ) for help writing this test script.
-
