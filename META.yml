@@ -1,0 +1,10 @@
+#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
+name:         HTML-LinkExtractor
+version:      0.08
+version_from: LinkExtractor.pm
+installdirs:  site
+requires:
+    HTML::TokeParser::Simple:      2
+
+distribution_type: module
+generated_by: ExtUtils::MakeMaker version 6.13

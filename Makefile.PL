@@ -6,7 +6,7 @@ WriteMakefile(
     'VERSION_FROM'	=> 'LinkExtractor.pm', # finds $VERSION
 
     PREREQ_PM   => {
-        'HTML::TokeParser::Simple'	=> '1.3', # or a minimum workable version
+        'HTML::TokeParser::Simple'	=> '2', # or a minimum workable version
     },
 
     ($] >= 5.005 ?    ## Add these new keywords supported since 5.005

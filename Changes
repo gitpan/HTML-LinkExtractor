@@ -1,4 +1,10 @@
 Revision history for Perl extension HTML::LinkExtractor.
+
+0.08  Wed Sep  3 19:12:51 2003
+    - bumped required HTML::TokeParser version and changed 
+      deprecated $T->return_text calls to $T->as_is after
+      a few users notified me
+
 0.07  Wed Apr  9 00:57:20 2003
     - small fix in meta refresh handling prompted by "Bengt Neiss" -- thanks dude
 

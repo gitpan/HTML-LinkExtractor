@@ -2,12 +2,12 @@ package HTML::LinkExtractor;
 
 use strict;
 
-use HTML::TokeParser::Simple 1;
+use HTML::TokeParser::Simple 2;
 use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -166,16 +166,16 @@ sub _parsola {
 
     ## In case we got nested tags
             if(@TEXT) {
-                $TEXT[-1]->{_TEXT} .= $T->return_text;
+                $TEXT[-1]->{_TEXT} .= $T->as_is;
             }
 
 ## Text?
         }elsif($T->is_text) {
-            $TEXT[-1]->{_TEXT} .= $T->return_text if @TEXT;
+            $TEXT[-1]->{_TEXT} .= $T->as_is if @TEXT;
 ## Declaration?
         }elsif($T->is_declaration) {
 ## We look at declarations, to get anly custom .dtd's (tis linky)
-            my $text = $T->return_text;
+            my $text = $T->as_is;
             if( $text =~ m{ SYSTEM \s \" ( [^\"]* ) \" > $ }ix ) {
                 $NL = { raw => $text, url => $1, tag => '!doctype' };
             }
@@ -183,7 +183,7 @@ sub _parsola {
         }elsif($T->is_end_tag){
 ## these be ignored (maybe not in between <a...></a> tags
             if(@TEXT) {
-                $TEXT[-1]->{_TEXT} .= $T->return_text;
+                $TEXT[-1]->{_TEXT} .= $T->as_is;
                 my $pop = pop @TEXT;
                 $TEXT[-1]->{_TEXT} .= $pop->{_TEXT} if @TEXT;
                 $pop->{_TEXT} = _stripHTML( \$pop->{_TEXT} ) if $self->strip;
