@@ -1,0 +1,14 @@
+Revision history for Perl extension HTML::LinkExtractor.
+
+0.04  Mon Aug 26 04:00:55 2002
+    - Converted to use HTML::TokeParser::Simple
+    - Added a strip and appropriate pod
+    - Release on CPAN (don't expect to ever need to upload a new version)
+0.03  Mon Aug 19 03:30:55 2002
+    - And then polished up ( and added pod )
+0.02  Mon Aug 19 01:27:55 2002
+    - The first incarnation is written (ugly)
+0.01  Mon Aug 19 00:47:55 2002
+	- original version; created by h2xs 1.21 with options
+		-AX -p 5.000 -n HTML::LinkExtractor
+
