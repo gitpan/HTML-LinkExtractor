@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::LinkExtractor.
 
+0.11  Fri Mar 19 06:48:31 2004
+    - fixed bug#5723 (shouldn've happened in version 0.10) 
+
 0.10  Fri Feb 27 22:04:38 2004
     - fixed bug#5470 where tags (img..) inside @TAGS_IN_NEED didn't get
       passed to callback

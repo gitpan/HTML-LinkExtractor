@@ -6,7 +6,7 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test;
-BEGIN { plan tests => 12 };
+BEGIN { plan tests => 13 };
 use HTML::LinkExtractor;
 ok(1); # If we made it this far, we're ok.
 

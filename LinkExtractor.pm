@@ -7,7 +7,7 @@ use URI 1;
 use Carp qw( croak );
 
 use vars qw( $VERSION );
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 ## The html tags which might have URLs
 # the master list of tagolas and required attributes (to constitute a link)
@@ -130,7 +130,7 @@ sub _parsola {
     while (my $T = $self->{_tp}->get_token() ) {
         my $NL; #NewLink
         my $Tag = $T->return_tag;
-        my $got_TAGS_IN_NEED;
+        my $got_TAGS_IN_NEED=0;
 ## Start tag?
         if($T->is_start_tag) {
             next unless exists $TAGS{$Tag};
@@ -171,7 +171,7 @@ sub _parsola {
                 }
             }
 
-    ## In case we got nested tags
+            ## In case we got nested tags
             if(@TEXT) {
                 $TEXT[-1]->{_TEXT} .= $T->as_is;
             }
@@ -189,7 +189,8 @@ sub _parsola {
 ## End tag?
         }elsif($T->is_end_tag){
 ## these be ignored (maybe not in between <a...></a> tags
-            if(@TEXT) {
+## unless we're stacking (bug #5723)
+            if(@TEXT and exists $TAGS{$Tag}) {
                 $TEXT[-1]->{_TEXT} .= $T->as_is;
                 my $pop = pop @TEXT;
                 $TEXT[-1]->{_TEXT} .= $pop->{_TEXT} if @TEXT;
@@ -236,7 +237,13 @@ sub _stripHTML {
     if($t->is_start_tag) {
         return $tp->get_trimmed_text( '/'.$t->return_tag );
     } else {
-       die " IMPOSSIBLE!!!! ";
+        require Data::Dumper;
+        local $Data::Dumper::Indent=1;
+        die " IMPOSSIBLE!!!! ",
+            Data::Dumper::Dumper(
+                '$HtmlRef',$HtmlRef,
+                '$t', $t,
+            );
     }
 }
 
